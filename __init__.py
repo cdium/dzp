@@ -3,6 +3,7 @@ from urllib.parse import quote_plus
 import requests
 import json
 import re
+import blowfish
 
 from .obj.Track import Track
 from .obj.Album import Album
@@ -230,7 +231,7 @@ class Deezer:
 	def decryptTrack(self, trackId, input, output):
 	    response = open(input, 'rb')
 	    outfile = open(output, 'wb')
-	    cipher = blowfish.Cipher(str.encode(getBlowfishKey(trackId)))
+	    cipher = blowfish.Cipher(str.encode(getBlowfishKey(str(trackId))))
 	    i=0
 	    while True:
 	        chunk = response.read(2048)

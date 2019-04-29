@@ -94,9 +94,9 @@ class Track:
 	def getDownloadUrl(self, format):
 		if not self.MD5:
 			return False
-		urlPart = self.MD5+"¤"+str(format)+"¤"+self.id+"¤"+self.mediaVersion
+		urlPart = b'\xa4'.join([str.encode(self.MD5), str.encode(str(format)), str.encode(str(self.id)), str.encode(str(self.mediaVersion))])
 		md5val = md5(urlPart)
-		step2 = b'\xa4'.join([str.encode(md5val), str.encode(urlPart)])
+		step2 = str.encode(md5val)+b'\xa4'+urlPart+b'\xa4'
 		while len(step2)%16 > 0:
 			step2 += b'.'
 		urlPart = ecbCrypt(b'jo6aey6haid2Teih', step2)
