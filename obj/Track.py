@@ -58,6 +58,12 @@ class Track:
 					self.artistsString.append(body["SNG_CONTRIBUTORS"]["main_artist"])
 				elif "mainartist" in body["SNG_CONTRIBUTORS"]:
 					self.artistsString.append(body["SNG_CONTRIBUTORS"]["mainartist"])
+				if "artist" in body["SNG_CONTRIBUTORS"]:
+					self.artistsString.append(body["SNG_CONTRIBUTORS"]["artist"])
+				if "featuredartist" in body["SNG_CONTRIBUTORS"]:
+					self.artistsString.append(body["SNG_CONTRIBUTORS"]["featuredartist"])
+				if "featuring" in body["SNG_CONTRIBUTORS"]:
+					self.artistsString.append(body["SNG_CONTRIBUTORS"]["featuring"])
 				if "associatedperformer" in body["SNG_CONTRIBUTORS"]:
 					self.artistsString.append(body["SNG_CONTRIBUTORS"]["associatedperformer"])
 				if not self.artistsString:

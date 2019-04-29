@@ -79,12 +79,24 @@ class Deezer:
 		}
 		return True
 
-	def loginViaArl(self, token):
+	def loginViaArl(self, arl):
+		cookie_obj = requests.cookies.create_cookie(
+			domain='deezer.com',
+			name='arl',
+			value=arl,
+			path="/",
+			rest={'HttpOnly': True}
+		)
+		self.session.cookies.set_cookie(cookie_obj)
 		userData = self.apiCall("deezer.getUserData")
+		if (userData["results"]["USER"]["USER_ID"] == 0):
+			return False
 		self.user = {
 			'id': userData["results"]["USER"]["USER_ID"],
 			'name': userData["results"]["USER"]["BLOG_NAME"],
 			'picture': userData["results"]["USER"]["USER_PICTURE"] if "USER_PICTURE" in userData["results"]["USER"] else ""
+		}
+		return True
 
 	def getTrack(self, id):
 		if (int(id)<0):
@@ -99,8 +111,24 @@ class Deezer:
 	def getTracks(self, ids):
 		tracksArray = []
 		body = self.apiCall('song.getListData', {'sng_ids': ids})
-		for track in body['results']['data']:
-			tracksArray.append(Track(track))
+		errors = 0
+		for i in range(len(ids)):
+			if ids[i] != 0:
+				tracksArray.append(Track(body['results']['data'][i-errors]))
+			else:
+				errors += 1
+				tracksArray.append({
+					'id': 0,
+				    'title': '',
+				    'duration': 0,
+				    'MD5': 0,
+				    'mediaVersion': 0,
+				    'filesize': 0,
+				    'album': {'id': 0, 'title': "", 'picture': ""},
+				    'artist': {'id': 0, 'name': ""},
+				    'artists': [{'id': 0, 'name': ""}],
+				    'recordType': -1,
+				})
 		return tracksArray
 
 	def getAlbum(self, id):
@@ -111,7 +139,9 @@ class Deezer:
 		tracksArray = []
 		body = self.apiCall('song.getListByAlbum', {'alb_id': id, 'nb': -1})
 		for track in body['results']['data']:
-			tracksArray.append(Track(track))
+			_track = Track(track)
+			_track.position = body['results']['data'].index(track)
+			tracksArray.append(_track)
 		return tracksArray
 
 	def getArtist(self, id):
@@ -125,6 +155,15 @@ class Deezer:
 	def getPlaylistTracks(self, id):
 		tracksArray = []
 		body = self.apiCall('playlist.getSongs', {'playlist_id': id, 'nb': -1})
+		for track in body['results']['data']:
+			_track = Track(track)
+			_track.position = body['results']['data'].index(track)
+			tracksArray.append(_track)
+		return tracksArray
+
+	def getArtistTopTracks(self, id):
+		tracksArray = []
+		body = self.apiCall('artist.getTopTrack', {art_id: id, nb: 100})
 		for track in body['results']['data']:
 			_track = Track(track)
 			_track.position = body['results']['data'].index(track)
