@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from ..utils import md5
 from ..utils import ecbCrypt
 

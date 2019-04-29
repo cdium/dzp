@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from .Track import Track
 
 class Album:
