@@ -28,6 +28,7 @@ class Deezer:
 		self.artistPictureHost = "https://e-cdns-images.dzcdn.net/images/artist/"
 		self.user = {}
 		self.session = requests.Session()
+		self.sid = None
 
 	def getToken(self):
 		tokenData = self.apiCall('deezer.getUserData')
@@ -288,7 +289,7 @@ class Deezer:
 		result["id"] = body["SNG_ID"]
 		result["title"] = body["SNG_TITLE"]+(" "+body["VERSION"] if body["VERSION"] else "")
 		result["duration"] = body["DURATION"]
-		result["MD5"] = body["MD5_ORIGIN"]
+		result["MD5"] = body["MD5_ORIGIN"] if "MD5_ORIGIN" in body else None
 		result["mediaVersion"] = body["MEDIA_VERSION"]
 		if (int(result["id"]) < 0):
 			result["filesize"] = int(body["FILESIZE"])
@@ -308,9 +309,9 @@ class Deezer:
 				'mp3_128': int(body["FILESIZE_MP3_128"]),
 				'mp3_320': int(body["FILESIZE_MP3_320"]),
 				'flac': int(body["FILESIZE_FLAC"]),
-				'mp4_ra1': int(body["FILESIZE_MP4_RA1"]),
-				'mp4_ra2': int(body["FILESIZE_MP4_RA2"]),
-				'mp4_ra3': int(body["FILESIZE_MP4_RA3"])
+				'mp4_ra1': int(body["FILESIZE_MP4_RA1"]) if "FILESIZE_MP4_RA1" in body else None,
+				'mp4_ra2': int(body["FILESIZE_MP4_RA2"]) if "FILESIZE_MP4_RA2" in body else None,
+				'mp4_ra3': int(body["FILESIZE_MP4_RA3"]) if "FILESIZE_MP4_RA3" in body else None
 			}
 			result["fallbackId"] = body["FALLBACK"]["SNG_ID"] if "FALLBACK" in body else 0
 			result["album"] = {
